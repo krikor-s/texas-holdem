@@ -1,0 +1,330 @@
+/* ── Reset & base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #111;
+  color: #eee;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#app { width: 100vw; height: 100vh; position: relative; }
+
+/* ── Table ─────────────────────────────────────────────────────── */
+#table {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, #2d6a4f 0%, #1b4332 55%, #0d2b1e 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Oval rail */
+#table::before {
+  content: '';
+  position: absolute;
+  inset: 24px;
+  border-radius: 50%;
+  border: 14px solid #5c3317;
+  box-shadow:
+    0 0 0 4px #7a4520,
+    inset 0 0 80px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Round badge ───────────────────────────────────────────────── */
+#round-badge {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.55);
+  padding: 3px 18px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: #bbb;
+  z-index: 10;
+}
+
+/* ── Board (center) ────────────────────────────────────────────── */
+#board {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+}
+
+#community-cards {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  min-height: 80px;
+  margin-bottom: 14px;
+}
+
+#pot-display {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+#action-log {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #ccc;
+  height: 1.2em;
+  font-style: italic;
+}
+
+/* ── Seats ─────────────────────────────────────────────────────── */
+#seats {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.seat {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: all;
+}
+
+/* Seat positions */
+.seat[data-pos="top"]        { top: 6%;    left: 50%;  transform: translateX(-50%); }
+.seat[data-pos="top-left"]   { top: 10%;   left: 20%;  transform: translateX(-50%); }
+.seat[data-pos="top-right"]  { top: 10%;   left: 80%;  transform: translateX(-50%); }
+.seat[data-pos="left"]       { top: 50%;   left: 8%;   transform: translate(-50%, -50%); }
+.seat[data-pos="right"]      { top: 50%;   left: 92%;  transform: translate(-50%, -50%); }
+.seat[data-pos="bottom"]     { bottom: 18%; left: 50%; transform: translateX(-50%); }
+
+/* Seat info card */
+.seat-info {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid #444;
+  border-radius: 10px;
+  padding: 6px 14px;
+  text-align: center;
+  min-width: 110px;
+  backdrop-filter: blur(4px);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.seat.active-turn .seat-info {
+  border-color: #ffd700;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.5);
+}
+
+.seat.folded .seat-info { opacity: 0.35; }
+
+.seat-name  { font-weight: 600; font-size: 0.9rem; }
+.seat-chips { font-size: 0.8rem; color: #ffd700; margin-top: 2px; }
+.seat-bet   { font-size: 0.75rem; color: #90ee90; }
+
+.seat-badges { display: flex; gap: 4px; justify-content: center; margin-top: 3px; }
+
+.badge {
+  font-size: 0.65rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.badge.dealer { background: #777; color: #fff; }
+.badge.sb     { background: #2e6fbe; color: #fff; }
+.badge.bb     { background: #c0392b; color: #fff; }
+.badge.allin  { background: #e67e22; color: #fff; }
+
+/* Hole cards under seat info */
+.hole-cards {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────── */
+.card {
+  width: 52px;
+  height: 76px;
+  border-radius: 7px;
+  background: #fff;
+  border: 1px solid #ccc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px 5px;
+  font-weight: 700;
+  font-size: 1rem;
+  line-height: 1;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  user-select: none;
+}
+
+.card.small {
+  width: 40px;
+  height: 58px;
+  font-size: 0.8rem;
+  padding: 3px 4px;
+}
+
+.card .suit { align-self: flex-end; }
+.card.red   { color: #cc1111; }
+.card.black { color: #111; }
+
+/* Face-down card */
+.card.face-down {
+  background: repeating-linear-gradient(
+    135deg,
+    #1a3a6b 0px, #1a3a6b 6px,
+    #1e4c8b 6px, #1e4c8b 12px
+  );
+  border-color: #0a1830;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Empty community card slot */
+.card-slot {
+  width: 52px;
+  height: 76px;
+  border-radius: 7px;
+  border: 2px dashed rgba(255, 255, 255, 0.18);
+}
+
+/* ── Controls ──────────────────────────────────────────────────── */
+#controls {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 10;
+}
+
+#controls.hidden { display: none; }
+
+#bet-info {
+  font-size: 0.9rem;
+  color: #ffd700;
+  height: 1.3em;
+  text-align: center;
+}
+
+#action-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+#raise-group { display: flex; align-items: center; gap: 8px; }
+
+.btn-action {
+  padding: 9px 20px;
+  border: none;
+  border-radius: 7px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.btn-action:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
+.btn-action:active { transform: translateY(0); }
+.btn-action.hidden { display: none; }
+
+.btn-action.danger  { background: #c0392b; color: #fff; }
+.btn-action.info    { background: #2980b9; color: #fff; }
+.btn-action.success { background: #27ae60; color: #fff; }
+.btn-action.warn    { background: #e67e22; color: #fff; }
+
+#raise-slider { width: 130px; accent-color: #e67e22; cursor: pointer; }
+#raise-label  { font-size: 0.85rem; color: #ffd700; min-width: 52px; }
+
+/* ── Overlays ──────────────────────────────────────────────────── */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.overlay.hidden { display: none; }
+
+.dialog {
+  background: #1a2535;
+  border: 2px solid #2e6fbe;
+  border-radius: 16px;
+  padding: 36px 48px;
+  text-align: center;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+}
+
+.dialog h1, .dialog h2 { color: #ffd700; margin-bottom: 16px; }
+.dialog p { color: #ccc; margin-bottom: 18px; }
+
+.dialog label {
+  display: block;
+  margin-bottom: 22px;
+  color: #bbb;
+  font-size: 1rem;
+}
+.dialog select {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: #243447;
+  color: #fff;
+  border: 1px solid #2e6fbe;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  padding: 12px 34px;
+  background: #2e6fbe;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+.btn-primary:hover { filter: brightness(1.2); }
+
+/* Hand result rows */
+#result-hands { margin: 16px 0; text-align: left; }
+
+.result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid #243447;
+  color: #ccc;
+}
+.result-row.winner { color: #ffd700; font-weight: 600; }
+.result-row .cards { display: flex; gap: 4px; }
+
+/* Thinking animation on AI seats */
+.thinking { animation: blink 1s ease-in-out infinite; }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.2; }
+}

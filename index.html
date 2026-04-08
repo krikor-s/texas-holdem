@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Texas Hold'em Poker</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ── Start screen ──────────────────────────────────── -->
+    <div id="start-screen" class="overlay">
+      <div class="dialog">
+        <h1>Texas Hold'em</h1>
+        <p>You start with <strong>$1,000</strong> in chips.</p>
+        <label>
+          AI opponents:
+          <select id="num-opponents">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+        <button id="btn-start" class="btn-primary">Deal Cards</button>
+      </div>
+    </div>
+
+    <!-- ── Hand result screen ─────────────────────────────── -->
+    <div id="result-screen" class="overlay hidden">
+      <div class="dialog">
+        <h2 id="result-heading"></h2>
+        <div id="result-hands"></div>
+        <button id="btn-next-hand" class="btn-primary">Next Hand</button>
+      </div>
+    </div>
+
+    <!-- ── Game-over screen ───────────────────────────────── -->
+    <div id="gameover-screen" class="overlay hidden">
+      <div class="dialog">
+        <h2>Game Over</h2>
+        <p id="gameover-msg"></p>
+        <button id="btn-play-again" class="btn-primary">Play Again</button>
+      </div>
+    </div>
+
+    <!-- ── Table ──────────────────────────────────────────── -->
+    <div id="table">
+      <div id="round-badge">Round <span id="round-number">—</span></div>
+
+      <!-- All player seats are rendered here by JS -->
+      <div id="seats"></div>
+
+      <!-- Board: community cards + pot + last action -->
+      <div id="board">
+        <div id="community-cards"></div>
+        <div id="pot-display">Pot: <span id="pot-amount">$0</span></div>
+        <div id="action-log"></div>
+      </div>
+
+      <!-- Human action controls (visible only on human's turn) -->
+      <div id="controls" class="hidden">
+        <div id="bet-info"><span id="to-call-label"></span></div>
+        <div id="action-buttons">
+          <button id="btn-fold"  class="btn-action danger">Fold</button>
+          <button id="btn-check" class="btn-action info hidden">Check</button>
+          <button id="btn-call"  class="btn-action success hidden">Call $0</button>
+          <div id="raise-group">
+            <input type="range" id="raise-slider" min="0" max="1000" value="0" />
+            <span id="raise-label">$0</span>
+            <button id="btn-raise" class="btn-action warn">Raise</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/card.js"></script>
+  <script src="js/hand-evaluator.js"></script>
+  <script src="js/player.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
