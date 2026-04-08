@@ -30,7 +30,7 @@ class Player {
   placeBet(amount) {
     const actual = Math.min(amount, this.chips);
     this.chips            -= actual;
-    this.currentBet       += actual;
+    this.currentBet        = actual;
     this.totalBetThisHand += actual;
     if (this.chips === 0) this.isAllIn = true;
     return actual;

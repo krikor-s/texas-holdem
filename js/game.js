@@ -262,7 +262,6 @@ class Game {
 
     // Reset per-round bets
     this.players.forEach(p => { p.currentBet = 0; });
-    this.currentBet = 0;
 
     const order = ['preflop', 'flop', 'turn', 'river', 'showdown'];
     this.phase = order[order.indexOf(this.phase) + 1];

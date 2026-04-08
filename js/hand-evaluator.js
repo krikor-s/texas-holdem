@@ -16,7 +16,7 @@ function combinations(arr, k) {
 // Returns the high card of a straight in `descRanks`, or 0 if none.
 function straightHighCard(descRanks) {
   if (new Set(descRanks).size < 5) return 0;              // duplicate ranks → no straight
-  if (descRanks[0] - descRanks[4] === 4) return descRanks[0];  // normal straight
+  if (descRanks[0] - descRanks[4] === 5) return descRanks[0];  // normal straight
   // Wheel: A-5-4-3-2  (ace plays low)
   if (descRanks[0] === 14 && descRanks[1] === 5 &&
       descRanks[2] === 4  && descRanks[3] === 3 &&
