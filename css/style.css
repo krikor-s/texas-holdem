@@ -158,6 +158,26 @@ body {
   box-shadow: 0 0 14px rgba(255, 215, 0, 0.5);
 }
 
+.seat.ai-seat.active-turn .hole-cards {
+  gap: 18px;
+  transition: gap 0.2s ease;
+}
+
+.seat.ai-seat.active-turn .hole-cards .card {
+  transform: scale(1.35);
+  transition: transform 0.2s ease;
+}
+
+.seat:not(.ai-seat).active-turn .hole-cards {
+  gap: 12px;
+  transition: gap 0.2s ease;
+}
+
+.seat:not(.ai-seat).active-turn .hole-cards .card {
+  transform: scale(1.15);
+  transition: transform 0.2s ease;
+}
+
 .seat.folded .seat-info { opacity: 0.35; }
 
 .seat-name  { font-weight: 600; font-size: 0.9rem; }
@@ -223,6 +243,23 @@ body {
   );
   border-color: #0a1830;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Deal-in animation */
+@keyframes deal-in {
+  from {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card.deal-in {
+  animation: deal-in 0.25s ease-out both;
+  animation-delay: var(--deal-delay, 0ms);
 }
 
 /* Empty community card slot */
