@@ -253,6 +253,27 @@ body {
 #raise-slider { width: 130px; accent-color: #e67e22; cursor: pointer; }
 #raise-label  { font-size: 0.85rem; color: #ffd700; min-width: 52px; }
 
+#controls.raising #btn-fold,
+#controls.raising #btn-check,
+#controls.raising #btn-call { display: none; }
+
+#kbd-legend { display: flex; gap: 14px; justify-content: center; margin-top: 6px; }
+
+.kbd-hint { font-size: 0.72rem; color: #888; }
+.kbd-hint.hidden { display: none; }
+
+kbd {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  background: #2a2a2a;
+  color: #ccc;
+  font-family: inherit;
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
+
 /* ── Overlays ──────────────────────────────────────────────────── */
 .overlay {
   position: fixed;

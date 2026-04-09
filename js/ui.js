@@ -88,6 +88,53 @@ raiseSlider.addEventListener('input', () => {
   raiseLabelEl.textContent = `$${raiseValue}`;
 });
 
+raiseSlider.addEventListener('focus', () => {
+  controlsEl.classList.add('raising');
+  btnRaise.style.display = 'none';
+  btnCall.style.display  = 'none';
+  $('kbd-raise-hint').classList.add('hidden');
+  $('kbd-call-hint').classList.add('hidden');
+  $('kbd-arrows').classList.remove('hidden');
+});
+
+raiseSlider.addEventListener('blur', () => {
+  controlsEl.classList.remove('raising');
+  btnRaise.style.display = '';
+  btnCall.style.display  = '';
+  $('kbd-raise-hint').classList.remove('hidden');
+  $('kbd-call-hint').classList.remove('hidden');
+  $('kbd-arrows').classList.add('hidden');
+});
+
+raiseSlider.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    btnRaise.click();
+  }
+  if (e.key === 'Escape') {
+    raiseSlider.blur();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (controlsEl.classList.contains('hidden')) return;
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+
+  switch (e.key.toLowerCase()) {
+    case 'f':
+      btnFold.click();
+      break;
+    case ' ':
+      e.preventDefault();
+      if (!btnCheck.classList.contains('hidden')) btnCheck.click();
+      else if (!btnCall.classList.contains('hidden')) btnCall.click();
+      break;
+    case 'r':
+      if (raiseGroupEl.style.display !== 'none') raiseSlider.focus();
+      break;
+  }
+});
+
 // ── Main render ──────────────────────────────────────────────────
 
 function render(state) {
@@ -211,6 +258,7 @@ function renderControls(state) {
     raiseLabelEl.textContent = `$${raiseValue}`;
   } else {
     raiseGroupEl.style.display = 'none';
+    $('kbd-arrows').classList.add('hidden');
   }
 }
 
