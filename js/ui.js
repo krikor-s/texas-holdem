@@ -162,13 +162,23 @@ function renderBoard(state) {
     }
   }
 
-  // Action log: show "waiting for X" when an AI is thinking
+  // Center log: show only the current action / waiting message (single line)
   if (state.waitingFor) {
     actionLogEl.innerHTML =
       `<span class="thinking">Waiting for ${esc(state.waitingFor)}…</span>`;
   } else {
     actionLogEl.textContent = state.lastAction;
   }
+
+  // Left history panel: full scrollable list
+  const historyEl = $('action-history');
+  historyEl.innerHTML = '';
+  for (const entry of state.actionLog) {
+    const p = document.createElement('p');
+    p.textContent = entry;
+    historyEl.appendChild(p);
+  }
+  historyEl.scrollTop = historyEl.scrollHeight;
 }
 
 // ── Seats ─────────────────────────────────────────────────────────

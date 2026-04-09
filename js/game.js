@@ -25,6 +25,7 @@ class Game {
     this.currentBet     = 0;
     this.actionQueue    = [];   // ordered list of player indices waiting to act
     this.lastAction     = '';
+    this.actionLog      = [];
     this.handResult     = null;
     this.roundNumber    = 0;
 
@@ -37,6 +38,7 @@ class Game {
     this.roundNumber++;
     this.handResult     = null;
     this.lastAction     = '';
+    this.actionLog      = [];
     this.communityCards = [];
     this.pot            = 0;
     this.currentBet     = 0;
@@ -143,6 +145,11 @@ class Game {
       }
     }
 
+    if (this.lastAction) {
+      this.actionLog.push(this.lastAction);
+      if (this.actionLog.length > 8) this.actionLog.shift();
+    }
+
     this._afterAction();
   }
 
@@ -167,6 +174,7 @@ class Game {
       sbIndex:        this.sbIndex,
       bbIndex:        this.bbIndex,
       lastAction:     this.lastAction,
+      actionLog:      [...this.actionLog],
       waitingFor,
       handResult:     this.handResult,
       isHumanTurn,
