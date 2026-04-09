@@ -34,6 +34,10 @@ const AI_SEAT_POSITIONS = {
 let game       = null;
 let raiseValue = 0;
 
+let prevCommunityCount = 0;
+let prevRoundNumber    = 0;
+let animateHoleCards   = false;
+
 // ── Element references ───────────────────────────────────────────
 
 const startScreen    = $('start-screen');
@@ -50,6 +54,7 @@ const btnFold        = $('btn-fold');
 const btnCheck       = $('btn-check');
 const btnCall        = $('btn-call');
 const btnRaise       = $('btn-raise');
+const btnBet         = $('btn-bet');
 const raiseSlider    = $('raise-slider');
 const raiseLabelEl   = $('raise-label');
 const raiseGroupEl   = $('raise-group');
@@ -80,18 +85,25 @@ btnCheck.addEventListener('click', () => game.playerAction('check'));
 btnCall.addEventListener('click',  () => game.playerAction('call'));
 
 btnRaise.addEventListener('click', () => {
+  raiseSlider.focus();
+});
+
+btnBet.addEventListener('click', () => {
+  raiseSlider.blur();
   game.playerAction('raise', raiseValue);
 });
 
 raiseSlider.addEventListener('input', () => {
   raiseValue = parseInt(raiseSlider.value, 10);
   raiseLabelEl.textContent = `$${raiseValue}`;
+  btnBet.textContent = `Bet $${raiseValue}`;
 });
 
 raiseSlider.addEventListener('focus', () => {
   controlsEl.classList.add('raising');
   btnRaise.style.display = 'none';
   btnCall.style.display  = 'none';
+  btnBet.classList.remove('hidden');
   $('kbd-raise-hint').classList.add('hidden');
   $('kbd-call-hint').classList.add('hidden');
   $('kbd-arrows').classList.remove('hidden');
@@ -101,6 +113,7 @@ raiseSlider.addEventListener('blur', () => {
   controlsEl.classList.remove('raising');
   btnRaise.style.display = '';
   btnCall.style.display  = '';
+  btnBet.classList.add('hidden');
   $('kbd-raise-hint').classList.remove('hidden');
   $('kbd-call-hint').classList.remove('hidden');
   $('kbd-arrows').classList.add('hidden');
@@ -109,7 +122,7 @@ raiseSlider.addEventListener('blur', () => {
 raiseSlider.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
-    btnRaise.click();
+    btnBet.click();
   }
   if (e.key === 'Escape') {
     raiseSlider.blur();
@@ -138,6 +151,11 @@ document.addEventListener('keydown', (e) => {
 // ── Main render ──────────────────────────────────────────────────
 
 function render(state) {
+  animateHoleCards = state.roundNumber !== prevRoundNumber;
+  if (animateHoleCards) {
+    prevRoundNumber    = state.roundNumber;
+    prevCommunityCount = 0;
+  }
   renderBoard(state);
   renderSeats(state);
   renderControls(state);
@@ -154,13 +172,20 @@ function renderBoard(state) {
   communityEl.innerHTML = '';
   for (let i = 0; i < 5; i++) {
     if (state.communityCards[i]) {
-      communityEl.appendChild(renderCard(state.communityCards[i]));
+      const cardEl = renderCard(state.communityCards[i]);
+      if (i >= prevCommunityCount) {
+        cardEl.style.setProperty('--deal-delay', `${(i - prevCommunityCount) * 150}ms`);
+        cardEl.classList.add('deal-in');
+        cardEl.addEventListener('animationend', () => cardEl.classList.remove('deal-in'), { once: true });
+      }
+      communityEl.appendChild(cardEl);
     } else {
       const slot = document.createElement('div');
       slot.className = 'card-slot';
       communityEl.appendChild(slot);
     }
   }
+  prevCommunityCount = state.communityCards.length;
 
   // Center log: show only the current action / waiting message (single line)
   if (state.waitingFor) {
@@ -191,19 +216,20 @@ function renderSeats(state) {
   const positions    = AI_SEAT_POSITIONS[Math.min(aiPlayers.length, 5)];
 
   aiPlayers.forEach((p, i) => {
-    seatsEl.appendChild(buildSeat(p, positions[i] ?? 'top', true));
+    seatsEl.appendChild(buildSeat(p, positions[i] ?? 'top', true, animateHoleCards));
   });
 
-  seatsEl.appendChild(buildSeat(humanPlayer, 'bottom', false));
+  seatsEl.appendChild(buildSeat(humanPlayer, 'bottom', false, animateHoleCards));
 }
 
-function buildSeat(player, position, smallCards) {
+function buildSeat(player, position, smallCards, animateCards) {
   const seat = document.createElement('div');
   seat.className   = 'seat';
   seat.dataset.pos = position;
 
-  if (player.isActing) seat.classList.add('active-turn');
-  if (player.folded)   seat.classList.add('folded');
+  if (player.isActing)  seat.classList.add('active-turn');
+  if (player.folded)    seat.classList.add('folded');
+  if (!player.isHuman)  seat.classList.add('ai-seat');
   if (player.isDealer) seat.classList.add('dealer');
 
   // Badges
@@ -231,8 +257,15 @@ function buildSeat(player, position, smallCards) {
   // Hole cards
   if (!player.folded && player.holeCards.length > 0) {
     const holeCardsEl = seat.querySelector('.hole-cards');
-    for (const card of player.holeCards)
-      holeCardsEl.appendChild(renderCard(card, smallCards));
+    for (let i = 0; i < player.holeCards.length; i++) {
+      const cardEl = renderCard(player.holeCards[i], smallCards);
+      if (animateCards) {
+        cardEl.style.setProperty('--deal-delay', `${i * 120}ms`);
+        cardEl.classList.add('deal-in');
+        cardEl.addEventListener('animationend', () => cardEl.classList.remove('deal-in'), { once: true });
+      }
+      holeCardsEl.appendChild(cardEl);
+    }
   }
 
   return seat;
@@ -266,6 +299,7 @@ function renderControls(state) {
       raiseValue = state.minRaise;
     raiseSlider.value        = raiseValue;
     raiseLabelEl.textContent = `$${raiseValue}`;
+    btnBet.textContent       = `Bet $${raiseValue}`;
   } else {
     raiseGroupEl.style.display = 'none';
     $('kbd-arrows').classList.add('hidden');
